@@ -1,0 +1,19 @@
+[project]
+name = "poetry2rye"
+version = "0.1.0"
+description = "A simple tool to migrate your Poetry project to rye"
+authors = [
+    { name = "nahco314", email = "nahco3_ta@yahoo.co.jp" }
+]
+dependencies = []
+readme = "README.md"
+requires-python = ">= 3.11"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+[tool.hatch.metadata]
+allow-direct-references = true
