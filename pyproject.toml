@@ -1,19 +1,32 @@
 [project]
 name = "poetry2rye"
-version = "0.1.0"
+version = "0.1.1"
 description = "A simple tool to migrate your Poetry project to rye"
 authors = [
     { name = "nahco314", email = "nahco3_ta@yahoo.co.jp" }
 ]
-dependencies = []
+dependencies = ["python-slugify~=8.0.1", "pyproject-parser~=0.9.0", "pydantic~=1.10.8", "poetry-core~=1.6.1", "tomlkit~=0.11.8"]
 readme = "README.md"
 requires-python = ">= 3.11"
+
+[project.scripts]
+poetry2rye = "poetry2rye.main:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool]
+[tool.black]
+line-length = 88
+
+[tool.isort]
+line_length = 88
+force_single_line = true
+
 [tool.rye]
 managed = true
+dev-dependencies = ["black~=23.3.0", "isort~=5.12.0"]
+
 [tool.hatch.metadata]
 allow-direct-references = true
