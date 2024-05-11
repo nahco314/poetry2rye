@@ -1,6 +1,6 @@
 [project]
 name = "poetry2rye"
-version = "0.1.1"
+version = "0.2.0"
 description = "A simple tool to migrate your Poetry project to rye"
 authors = [
     { name = "nahco314", email = "nahco3_ta@yahoo.co.jp" }
