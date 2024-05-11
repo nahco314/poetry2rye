@@ -13,6 +13,11 @@ from poetry2rye.project import PoetryProject
 from poetry2rye.utils import get_next_backup_path
 
 
+def read_name_email(string: str) -> dict[str, str]:
+    name, _, email = string.rpartition(" ")
+    return {"name": name, "email": email[1:-1]}
+
+
 def convert(project_path: Path) -> None:
     project_backup = get_next_backup_path(project_path)
     shutil.copytree(project_path, project_backup, dirs_exist_ok=True, symlinks=True)
@@ -34,20 +39,12 @@ def convert(project_path: Path) -> None:
         pass
 
     # authors / maintainers
-    authors = []
-    for author in poetry_project.poetry["authors"]:
-        seps = author.split()
-        assert len(seps) == 2
-        authors.append({"name": seps[0], "email": seps[1][1:-1]})
+    authors = list(map(read_name_email, poetry_project.poetry["authors"]))
     if authors:
         project_sec["authors"] = tomlkit.array()
         project_sec["authors"].extend(authors)
 
-    maintainers = []
-    for maintainer in poetry_project.poetry.get("maintainers", []):
-        seps = maintainer.split()
-        assert len(seps) == 2
-        maintainers.append({"name": seps[0], "email": seps[1][1:-1]})
+    maintainers = list(map(read_name_email, poetry_project.poetry.get("maintainers", [])))
     if maintainers:
         project_sec["maintainers"] = tomlkit.array()
         project_sec["maintainers"].extend(maintainers)
@@ -116,8 +113,11 @@ def convert(project_path: Path) -> None:
         else:
             result[name] = deepcopy(pyproject[name])
 
+    packages = [f"src/{poetry_project.module_name}"]
+
     result["tool"]["rye"] = tool_rye_sec
     result["tool"]["hatch"] = {"metadata": {"allow-direct-references": True}}
+    result["tool"]["hatch"]["build"] = {"targets": {"wheel": {"packages": packages}}}
 
     with open(project_path / "pyproject.toml", "w") as f:
         f.write(tomlkit.dumps(result))
@@ -126,7 +126,7 @@ def convert(project_path: Path) -> None:
     with open(project_path / "pyproject.toml") as f:
         for num, content in enumerate(f.readlines(), start=1):
             if "poetry" in content:
-                print(f"Found 'poetry' in line {num}: {content}")
+                print(f"Found 'poetry' in line {num}: {content.strip()}")
 
     if (project_path / "poetry.lock").exists():
         os.remove(project_path / "poetry.lock")

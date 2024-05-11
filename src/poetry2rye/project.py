@@ -84,14 +84,21 @@ class PoetryProject:
         assert self.poetry is not None, "poetry section not found in pyproject.toml"
 
         self.src_path: Path
+        self.module_path: Path
         # this method is not exact, but tentatively we do this
         if (self.path / "src").exists():
             self.src_path = self.path / "src"
+            sub_lst = list(self.src_path.iterdir())
+            if len(sub_lst) == 1:
+                self.src_path = sub_lst[0]
+            elif len(sub_lst) == 0:
+                raise FileNotFoundError("no subdirectories found in src")
+            else:
+                raise FileNotFoundError("multiple subdirectories found in src")
         else:
             self.src_path = self.path
-
-        self.module_path = self.src_path / self.module_name
-        assert self.module_path.exists(), "module not found"
+            self.module_path = self.src_path / self.module_name
+            assert self.module_path.exists(), "module not found"
 
     def process_dependencies_dict(
         self, dct: dict[str, Any], is_dev: bool
