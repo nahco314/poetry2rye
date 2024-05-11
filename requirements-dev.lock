@@ -5,34 +5,81 @@
 #   pre: false
 #   features: []
 #   all-features: false
+#   with-sources: false
 
 -e file:.
 apeye==1.3.0
+    # via shippinglabel
 apeye-core==1.1.2
+    # via apeye
+    # via pyproject-parser
 attrs==23.1.0
+    # via pyproject-parser
 black==23.3.0
 certifi==2023.5.7
+    # via requests
 charset-normalizer==3.1.0
+    # via requests
 click==8.1.3
+    # via black
 dist-meta==0.8.0
+    # via shippinglabel
 dom-toml==0.6.1
+    # via pyproject-parser
+    # via shippinglabel
 domdf-python-tools==3.6.1
+    # via apeye
+    # via apeye-core
+    # via dist-meta
+    # via dom-toml
+    # via pyproject-parser
+    # via shippinglabel
 handy-archives==0.1.4
+    # via dist-meta
 idna==3.4
+    # via apeye-core
+    # via requests
 isort==5.12.0
 mypy-extensions==1.0.0
+    # via black
 natsort==8.3.1
+    # via domdf-python-tools
+    # via pyproject-parser
 packaging==23.1
+    # via black
+    # via dist-meta
+    # via pyproject-parser
+    # via shippinglabel
 pathspec==0.11.1
+    # via black
 platformdirs==3.5.1
-poetry-core==1.6.1
+    # via apeye
+    # via black
+    # via shippinglabel
+poetry-core==1.9.0
+    # via poetry2rye
 pydantic==1.10.8
+    # via poetry2rye
 pyproject-parser==0.9.0
+    # via poetry2rye
 python-slugify==8.0.1
+    # via poetry2rye
 requests==2.31.0
+    # via apeye
 shippinglabel==1.5.0
+    # via pyproject-parser
 text-unidecode==1.3
+    # via python-slugify
 toml==0.10.2
+    # via dom-toml
+    # via pyproject-parser
 tomlkit==0.11.8
-typing-extensions==4.6.2
+    # via poetry2rye
+typing-extensions==4.11.0
+    # via domdf-python-tools
+    # via poetry2rye
+    # via pydantic
+    # via pyproject-parser
+    # via shippinglabel
 urllib3==2.0.2
+    # via requests

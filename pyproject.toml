@@ -5,7 +5,14 @@ description = "A simple tool to migrate your Poetry project to rye"
 authors = [
     { name = "nahco314", email = "nahco3_ta@yahoo.co.jp" }
 ]
-dependencies = ["python-slugify~=8.0.1", "pyproject-parser~=0.9.0", "pydantic~=1.10.8", "poetry-core~=1.6.1", "tomlkit~=0.11.8"]
+dependencies = [
+    "python-slugify~=8.0.1",
+    "pyproject-parser~=0.9.0",
+    "pydantic~=1.10.8",
+    "poetry-core>=1.9.0",
+    "tomlkit~=0.11.8",
+    "typing-extensions>=4.11.0",
+]
 readme = "README.md"
 requires-python = ">= 3.11"
 
