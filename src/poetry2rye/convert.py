@@ -19,10 +19,6 @@ def read_name_email(string: str) -> dict[str, str]:
 
 
 def convert(project_path: Path) -> None:
-    project_backup = get_next_backup_path(project_path)
-    shutil.copytree(project_path, project_backup, dirs_exist_ok=True, symlinks=True)
-    print(f"created backup: {project_backup}")
-
     poetry_project = PoetryProject(project_path)
 
     project_sec = {}
@@ -120,6 +116,10 @@ def convert(project_path: Path) -> None:
     result["tool"]["rye"] = tool_rye_sec
     result["tool"]["hatch"] = {"metadata": {"allow-direct-references": True}}
     result["tool"]["hatch"]["build"] = {"targets": {"wheel": {"packages": packages}}}
+
+    project_backup = get_next_backup_path(project_path)
+    shutil.copytree(project_path, project_backup, dirs_exist_ok=True, symlinks=True)
+    print(f"created backup: {project_backup}")
 
     with open(project_path / "pyproject.toml", "w") as f:
         f.write(tomlkit.dumps(result))
