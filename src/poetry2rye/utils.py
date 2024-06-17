@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Any
 
 
 def backup_path(project_path: Path, num: int) -> Path:
@@ -34,3 +34,11 @@ def get_biggest_backup_num(project_path: Path) -> Optional[int]:
 def get_next_backup_path(project_path: Path) -> Path:
     biggest = get_biggest_backup_num(project_path)
     return backup_path(project_path, biggest + 1 if biggest is not None else 0)
+
+
+def find_other_key(dct: dict[str, Any], keys: list[str]) -> Optional[str]:
+    for k in dct:
+        if k not in keys:
+            return k
+
+    return None

@@ -44,7 +44,9 @@ def convert(project_path: Path) -> None:
         project_sec["authors"] = tomlkit.array()
         project_sec["authors"].extend(authors)
 
-    maintainers = list(map(read_name_email, poetry_project.poetry.get("maintainers", [])))
+    maintainers = list(
+        map(read_name_email, poetry_project.poetry.get("maintainers", []))
+    )
     if maintainers:
         project_sec["maintainers"] = tomlkit.array()
         project_sec["maintainers"].extend(maintainers)
@@ -126,7 +128,7 @@ def convert(project_path: Path) -> None:
     with open(project_path / "pyproject.toml") as f:
         for num, content in enumerate(f.readlines(), start=1):
             if "poetry" in content:
-                print(f"Found 'poetry' in line {num}: {content.strip()}")
+                print(f"Warning: found 'poetry' in line {num}: {content.strip()}")
 
     if (project_path / "poetry.lock").exists():
         os.remove(project_path / "poetry.lock")

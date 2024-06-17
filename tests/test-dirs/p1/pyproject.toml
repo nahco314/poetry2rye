@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "p0"
+version = "0.1.0"
+description = ""
+authors = ["nahco314 <nahco3_ta@yahoo.co.jp>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+numpy = "^2.0.0"
+sortedcontainers = "2.4.0"
+pyproject-parser = {git = "https://github.com/repo-helper/pyproject-parser"}
+
+
+[tool.poetry.group.dev.dependencies]
+typing-extensions = "^4.12.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

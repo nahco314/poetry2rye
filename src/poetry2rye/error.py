@@ -1,0 +1,2 @@
+class ControlledError(Exception):
+    pass

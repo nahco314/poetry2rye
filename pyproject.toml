@@ -1,6 +1,6 @@
 [project]
 name = "poetry2rye"
-version = "0.2.1"
+version = "0.3.0"
 description = "A simple tool to migrate your Poetry project to rye"
 authors = [
     { name = "nahco314", email = "nahco3_ta@yahoo.co.jp" }
@@ -33,7 +33,12 @@ force_single_line = true
 
 [tool.rye]
 managed = true
-dev-dependencies = ["black~=23.3.0", "isort~=5.12.0"]
+dev-dependencies = [
+    "black~=23.3.0",
+    "isort~=5.12.0",
+    "poetry>=1.8.3",
+    "pytest>=8.2.2",
+]
 
 [tool.hatch.metadata]
 allow-direct-references = true

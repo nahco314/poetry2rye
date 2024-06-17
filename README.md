@@ -9,13 +9,14 @@ rye install poetry2rye
 
 # Usage
 ### Migrate
-`poetry2rye [PATH]`
+`poetry2rye mig [PATH]`
 
-Migrate path projects to rye. The default of PATH is `.`
+Migrate path projects to rye.
 
 This command does the following:
 - if the project is flat-layout, make it src-layout
 - remove poetry.lock
+  - this doesn't respect the lock file (at this time)
 - change pyproject.toml
   - remove `[tool.poetry]` and `[tool.poetry.*]`
   - make `[project]` from `[tool.poetry]` and `[tool.poetry.*]`
@@ -24,7 +25,11 @@ This command does the following:
   - add `[tool.hatch.metadata]`
 
 ### Get Backup
-`poetry2rye [PATH] --get-backup [NUMBER]`
+`poetry2rye get-backup [PATH]`
+
+Options:
+- `-n [NUMBER]`: The number of the backup to retrieve. If not specified, the last backup created will be used.
+- `-y`: Skip the confirmation prompt.
 
 Retrieve the backup automatically created during migration and replace the project with the backup.
 

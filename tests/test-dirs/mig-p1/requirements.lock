@@ -8,67 +8,65 @@
 #   with-sources: false
 
 -e file:.
-apeye==1.3.0
+apeye==1.4.1
     # via shippinglabel
-apeye-core==1.1.2
+apeye-core==1.1.5
     # via apeye
     # via pyproject-parser
-attrs==23.1.0
+attrs==23.2.0
     # via pyproject-parser
-certifi==2023.5.7
+certifi==2024.6.2
     # via requests
-charset-normalizer==3.1.0
+charset-normalizer==3.3.2
     # via requests
-dist-meta==0.8.0
+deprecation==2.1.0
+    # via deprecation-alias
+deprecation-alias==0.3.3
+    # via shippinglabel
+dist-meta==0.8.1
     # via shippinglabel
 dom-toml==2.0.0
     # via pyproject-parser
     # via shippinglabel
-domdf-python-tools==3.6.1
+domdf-python-tools==3.8.1
     # via apeye
     # via apeye-core
     # via dist-meta
     # via dom-toml
     # via pyproject-parser
     # via shippinglabel
-handy-archives==0.1.4
+handy-archives==0.2.0
     # via dist-meta
-idna==3.4
+idna==3.7
     # via apeye-core
     # via requests
-natsort==8.3.1
+natsort==8.4.0
     # via domdf-python-tools
     # via pyproject-parser
-packaging==23.1
+numpy==2.0.0
+    # via p1
+packaging==24.1
+    # via deprecation
+    # via deprecation-alias
     # via dist-meta
     # via pyproject-parser
     # via shippinglabel
-platformdirs==3.5.1
+platformdirs==4.2.2
     # via apeye
     # via shippinglabel
-poetry-core==1.9.0
-    # via poetry2rye
-pydantic==1.10.8
-    # via poetry2rye
-pyproject-parser==0.11.1
-    # via poetry2rye
-python-slugify==8.0.1
-    # via poetry2rye
-requests==2.31.0
+pyproject-parser @ git+https://github.com/repo-helper/pyproject-parser@096a3f73a98d5ddf9ebd614852f6642f1f6b398b
+    # via p1
+requests==2.32.3
     # via apeye
-shippinglabel==1.5.0
+shippinglabel==1.7.2
     # via pyproject-parser
-text-unidecode==1.3
-    # via python-slugify
+sortedcontainers==2.4.0
+    # via p1
 tomli==2.0.1
     # via dom-toml
-tomlkit==0.11.8
-    # via poetry2rye
-typing-extensions==4.11.0
+typing-extensions==4.12.2
     # via domdf-python-tools
-    # via poetry2rye
-    # via pydantic
     # via pyproject-parser
     # via shippinglabel
-urllib3==2.0.2
+urllib3==2.2.1
     # via requests
