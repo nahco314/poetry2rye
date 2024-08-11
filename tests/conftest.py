@@ -1,10 +1,8 @@
 import os
-import subprocess
 from pathlib import Path
 
 import pytest
 
-from typing import Callable
 
 
 @pytest.fixture
