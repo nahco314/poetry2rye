@@ -4,7 +4,6 @@ from pathlib import Path
 import pytest
 
 
-
 @pytest.fixture
 def dirs() -> Path:
     this_file_path = Path(__file__)
