@@ -1,0 +1,27 @@
+name: QA checks
+
+"on":
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install rye
+        uses: eifinger/setup-rye@v4
+        with:
+          version: "0.38.0"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: |
+          rye sync
+
+      - name: Check formatting
+        run: rye fmt --check
+
+      - name: Lint
+        run: rye lint
