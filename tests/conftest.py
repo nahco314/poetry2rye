@@ -15,4 +15,4 @@ def dirs() -> Path:
 
 @pytest.fixture
 def rye() -> str:
-    return f"{os.getenv("HOME")}/.rye/shims/rye"
+    return f'{os.getenv("HOME")}/.rye/shims/rye'
