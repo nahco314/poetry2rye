@@ -94,7 +94,7 @@ class PoetryProject:
         # this method is not exact, but tentatively we do this
         if (self.path / "src").exists():
             self.src_path = self.path / "src"
-            sub_lst = list(self.src_path.iterdir())
+            sub_lst = [d for d in self.src_path.iterdir() if not d.name.startswith(".")]
             if len(sub_lst) == 1:
                 self.src_path = sub_lst[0]
             elif len(sub_lst) == 0:
