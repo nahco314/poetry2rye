@@ -37,34 +37,51 @@ def rye_module_name(project_name: str) -> str:
 @dataclass
 class Dependency:
     name: str
+    extras: Optional[list[str]]
     is_dev: bool
 
     def is_python_dep(self) -> bool:
         return False
 
-    @abstractmethod
     def to_str(self) -> str:
-        raise NotImplementedError
+        name = self.name
+        if self.extras:
+            name += f"[{','.join(self.extras)}]"
+
+        return name
 
 
 @dataclass
 class BasicDependency(Dependency):
     version: VersionConstraint
-    extras: Optional[list[str]]
-
+    
     def is_python_dep(self) -> bool:
         return self.name == "python"
 
     def to_str(self) -> str:
-        return f"{self.name}{format_python_constraint(self.version)}"
+        name = super().to_str()
+
+        version = format_python_constraint(self.version)
+        if version == "*":
+            # using "*" is equivalent to not specifying the version
+            version = ""
+
+        return f"{name}{version}"
 
 
 @dataclass
 class GitDependency(Dependency):
     git_link: str
+    tag: Optional[str]
 
     def to_str(self) -> str:
-        return f"{self.name} @ git+{self.git_link}"
+        name = super().to_str()
+
+        link = self.git_link
+        if self.tag:
+            link += f"@{self.tag}"
+
+        return f"{name} @ git+{link}"
 
 
 class PoetryProject:
@@ -127,17 +144,23 @@ class PoetryProject:
                 assert isinstance(item, dict)
 
                 if "git" in item:
-                    if (k := find_other_key(item, ["git"])) is not None:
+                    if (k := find_other_key(item, ["git", "tag", "extras"])) is not None:
                         raise ControlledError(
                             f"key {k} is not supported (in dependency {name})"
                         )
 
                     res.append(
-                        GitDependency(name=name, git_link=item["git"], is_dev=is_dev)
+                        GitDependency(
+                            name=name,
+                            git_link=item["git"],
+                            is_dev=is_dev,
+                            extras=item.get("extras"),
+                            tag=item.get("tag"),
+                        )
                     )
 
                 elif "version" in item:
-                    if (k := find_other_key(item, ["version"])) is not None:
+                    if (k := find_other_key(item, ["version", "extras"])) is not None:
                         raise ControlledError(
                             f"key {k} is not supported (in dependency {name})"
                         )
@@ -146,7 +169,7 @@ class PoetryProject:
                         BasicDependency(
                             name=name,
                             version=parse_constraint(item["version"]),
-                            extras=None,
+                            extras=item.get("extras"),
                             is_dev=is_dev,
                         )
                     )
