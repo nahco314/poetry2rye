@@ -54,7 +54,7 @@ class Dependency:
 @dataclass
 class BasicDependency(Dependency):
     version: VersionConstraint
-    
+
     def is_python_dep(self) -> bool:
         return self.name == "python"
 
@@ -144,7 +144,9 @@ class PoetryProject:
                 assert isinstance(item, dict)
 
                 if "git" in item:
-                    if (k := find_other_key(item, ["git", "tag", "extras"])) is not None:
+                    if (
+                        k := find_other_key(item, ["git", "tag", "extras"])
+                    ) is not None:
                         raise ControlledError(
                             f"key {k} is not supported (in dependency {name})"
                         )
