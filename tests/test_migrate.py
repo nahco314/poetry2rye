@@ -16,6 +16,7 @@ PROJECT_NAMES = ["p0", "p1", "p2"]
 def test_migrate(project_name: str, tmp_path: Path, dirs: Path, rye: str) -> None:
     base_project = dirs / project_name
     tmp_project = tmp_path / project_name
+    mig_project = dirs / f"mig-{project_name}"
 
     shutil.copytree(base_project, tmp_project)
 
@@ -23,8 +24,8 @@ def test_migrate(project_name: str, tmp_path: Path, dirs: Path, rye: str) -> Non
 
     subprocess.run([rye, "sync"], cwd=tmp_project, check=True)
 
-    assert_directories_equal(dirs / f"mig-{project_name}/src", tmp_project / "src")
-    assert_pyproject_toml_equal(dirs / f"mig-{project_name}", tmp_project)
+    assert_directories_equal(mig_project / "src", tmp_project / "src")
+    assert_pyproject_toml_equal(mig_project, tmp_project)
 
 
 def assert_directories_equal(expected_dir: Path, actual_dir: Path) -> None:
