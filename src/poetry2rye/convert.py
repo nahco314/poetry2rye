@@ -83,6 +83,10 @@ def convert(project_path: Path) -> None:
             else:
                 project_sec["dependencies"].append(dep.to_str())
 
+    # project scripts (aka executables)
+    if poetry_project.poetry.get("scripts"):
+        project_sec["scripts"] = _convert_scripts(poetry_project.poetry["scripts"])
+
     with open(project_path / "pyproject.toml") as f:
         pyproject = tomlkit.load(f)
 
@@ -138,3 +142,14 @@ def convert(project_path: Path) -> None:
             poetry_project.module_path,
             project_path / "src" / poetry_project.module_name,
         )
+
+
+def _convert_scripts(poetry_scripts):
+    rye_scripts = {}
+    for script_name, script_value in poetry_scripts.items():
+        if isinstance(script_value, str):
+            rye_scripts[script_name] = script_value
+        elif isinstance(script_value, dict):
+            # Handle more complex script definitions if needed
+            rye_scripts[script_name] = script_value.get("callable", "")
+    return rye_scripts
