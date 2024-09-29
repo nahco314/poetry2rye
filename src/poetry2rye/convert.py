@@ -8,8 +8,7 @@ from typing import Any
 import tomlkit
 from poetry.core.version.helpers import format_python_constraint
 
-from poetry2rye.project import BasicDependency
-from poetry2rye.project import PoetryProject
+from poetry2rye.project import BasicDependency, PoetryProject
 from poetry2rye.utils import get_next_backup_path
 
 
@@ -71,17 +70,20 @@ def convert(project_path: Path) -> None:
         pass
 
     # dependencies
-    project_sec["dependencies"] = []
+    project_sec["dependencies"] = tomlkit.array()
     for dep in poetry_project.dependencies:
         if dep.is_python_dep():
             assert isinstance(dep, BasicDependency)
             project_sec["requires-python"] = format_python_constraint(dep.version)
         else:
             if dep.is_dev:
-                tool_rye_sec.setdefault("dev-dependencies", [])
-                tool_rye_sec["dev-dependencies"].append(dep.to_str())
+                tool_rye_sec.setdefault("dev-dependencies", tomlkit.array())
+                tool_rye_sec["dev-dependencies"].add_line(dep.to_str())
             else:
-                project_sec["dependencies"].append(dep.to_str())
+                project_sec["dependencies"].add_line(dep.to_str())
+    if "dev-dependencies" in tool_rye_sec:
+        tool_rye_sec["dev-dependencies"].add_line(indent="")
+    project_sec["dependencies"].add_line(indent="")
 
     # project scripts (aka executables)
     if poetry_project.poetry.get("scripts"):
