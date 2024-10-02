@@ -1,9 +1,7 @@
 import re
-from abc import abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
-from typing import Optional
+from typing import Any, Optional
 
 import pyproject_parser
 import slugify
@@ -14,6 +12,7 @@ from poetry.core.version.helpers import format_python_constraint
 from poetry2rye.error import ControlledError
 from poetry2rye.utils import find_other_key
 
+PYTHON_MARKER = re.compile(r'(\d+(\.\d+)?)')
 
 # unused
 def poetry_canonicalize_name(project_name: str) -> str:
@@ -54,6 +53,7 @@ class Dependency:
 @dataclass
 class BasicDependency(Dependency):
     version: VersionConstraint
+    python: Optional[str]
 
     def is_python_dep(self) -> bool:
         return self.name == "python"
@@ -64,9 +64,15 @@ class BasicDependency(Dependency):
         version = format_python_constraint(self.version)
         if version == "*":
             # using "*" is equivalent to not specifying the version
-            version = ""
+            return f"{name}"
 
-        return f"{name}{version}"
+        constraint = f"{name}{format_python_constraint(self.version)}"
+        if self.python:
+            py_version = PYTHON_MARKER.sub(
+                r"'\1'", format_python_constraint(self.python))
+            constraint += f"; python_version {py_version}"
+
+        return constraint
 
 
 @dataclass
@@ -132,14 +138,30 @@ class PoetryProject:
 
         for name, item in dct.items():
             if isinstance(item, str):
+                parts = item.split(";")
+
                 res.append(
                     BasicDependency(
                         name=name,
-                        version=parse_constraint(item),
+                        version=parse_constraint(parts[0]),
+                        python=parts[1].split(" ")[1] if len(parts) > 1 and "python" in parts[1] else None,
                         extras=None,
                         is_dev=is_dev,
                     )
                 )
+            elif isinstance(item, list):
+                for i in item:
+                    assert isinstance(i, dict)
+
+                    res.append(
+                        BasicDependency(
+                            name=name,
+                            version=parse_constraint(i["version"]),
+                            python=parse_constraint(i["python"]) if "python" in i else None,
+                            extras=i["extras"] if "extras" in i else None,
+                            is_dev=is_dev,
+                        )
+                    )
             else:
                 assert isinstance(item, dict)
 
@@ -162,7 +184,7 @@ class PoetryProject:
                     )
 
                 elif "version" in item:
-                    if (k := find_other_key(item, ["version", "extras"])) is not None:
+                    if (k := find_other_key(item, ["version", "extras", "python"])) is not None:
                         raise ControlledError(
                             f"key {k} is not supported (in dependency {name})"
                         )
@@ -171,6 +193,7 @@ class PoetryProject:
                         BasicDependency(
                             name=name,
                             version=parse_constraint(item["version"]),
+                            python=parse_constraint(item["python"]) if "python" in item else None,
                             extras=item.get("extras"),
                             is_dev=is_dev,
                         )
@@ -192,9 +215,13 @@ class PoetryProject:
             res.extend(self.process_dependencies_dict(dep, is_dev=False))
 
         try:
-            dev_dep = self.poetry["group"]["dev"]["dependencies"]
+            if "dev-dependencies" in self.poetry:
+                dev_dep = self.poetry["dev-dependencies"]
+            else:
+                dev_dep = self.poetry["group"]["dev"]["dependencies"]
         except KeyError:
             dev_dep = None
+
         if dev_dep is not None:
             res.extend(self.process_dependencies_dict(dev_dep, is_dev=True))
 
