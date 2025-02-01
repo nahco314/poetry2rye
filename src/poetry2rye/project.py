@@ -1,9 +1,9 @@
 import re
+import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
 
-import pyproject_parser
 import slugify
 from poetry.core.constraints.version.parser import parse_constraint
 from poetry.core.constraints.version.version_constraint import VersionConstraint
@@ -101,10 +101,12 @@ class PoetryProject:
         if not (self.path / "pyproject.toml").exists():
             raise ControlledError("pyproject.toml not found")
 
-        self.pyproject = pyproject_parser.PyProject.load(self.path / "pyproject.toml")
-        self.poetry = self.pyproject.tool["poetry"]
+        with open(self.path / "pyproject.toml", "rb") as file:
+            self.pyproject = tomllib.load(file)
 
-        if self.pyproject.project is not None:
+        self.poetry = self.pyproject["tool"]["poetry"]
+
+        if self.pyproject.get("project") is not None:
             raise ControlledError(
                 "this pyproject.toml has a project section.\n"
                 "for now, poetry2rye only supports pyproject.toml written using "
