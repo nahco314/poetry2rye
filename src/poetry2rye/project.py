@@ -12,7 +12,8 @@ from poetry.core.version.helpers import format_python_constraint
 from poetry2rye.error import ControlledError
 from poetry2rye.utils import find_other_key
 
-PYTHON_MARKER = re.compile(r'(\d+(\.\d+)?)')
+PYTHON_MARKER = re.compile(r"(\d+(\.\d+)?)")
+
 
 # unused
 def poetry_canonicalize_name(project_name: str) -> str:
@@ -69,7 +70,8 @@ class BasicDependency(Dependency):
         constraint = f"{name}{format_python_constraint(self.version)}"
         if self.python:
             py_version = PYTHON_MARKER.sub(
-                r"'\1'", format_python_constraint(self.python))
+                r"'\1'", format_python_constraint(self.python)
+            )
             constraint += f"; python_version {py_version}"
 
         return constraint
@@ -91,7 +93,7 @@ class GitDependency(Dependency):
 
 
 class PoetryProject:
-    def __init__(self, project_path: Path) -> None:
+    def __init__(self, project_path: Path, ensure_src: bool = True) -> None:
         self.path = project_path
         self.project_name = rye_canonicalize_name(self.path.name)
         self.module_name = rye_module_name(self.path.name)
@@ -112,24 +114,27 @@ class PoetryProject:
         if self.poetry is None:
             raise ControlledError("poetry section not found in pyproject.toml")
 
-        self.src_path: Path
-        self.module_path: Path
-        # this method is not exact, but tentatively we do this
-        if (self.path / "src").exists():
-            self.src_path = self.path / "src"
-            sub_lst = [d for d in self.src_path.iterdir() if not d.name.startswith(".")]
-            if len(sub_lst) == 1:
-                self.src_path = sub_lst[0]
-            elif len(sub_lst) == 0:
-                raise ControlledError("no subdirectories found in src")
+        if ensure_src:
+            self.src_path: Path
+            self.module_path: Path
+            # this method is not exact, but tentatively we do this
+            if (self.path / "src").exists():
+                self.src_path = self.path / "src"
+                sub_lst = [
+                    d for d in self.src_path.iterdir() if not d.name.startswith(".")
+                ]
+                if len(sub_lst) == 1:
+                    self.src_path = sub_lst[0]
+                elif len(sub_lst) == 0:
+                    raise ControlledError("no subdirectories found in src")
+                else:
+                    raise ControlledError("multiple subdirectories found in src")
             else:
-                raise ControlledError("multiple subdirectories found in src")
-        else:
-            self.src_path = self.path
-            self.module_path = self.src_path / self.module_name
+                self.src_path = self.path
+                self.module_path = self.src_path / self.module_name
 
-            if not self.module_path.exists():
-                raise ControlledError("module not found")
+                if not self.module_path.exists():
+                    raise ControlledError(f'module "{self.module_name}" not found')
 
     def process_dependencies_dict(
         self, dct: dict[str, Any], is_dev: bool
@@ -144,7 +149,9 @@ class PoetryProject:
                     BasicDependency(
                         name=name,
                         version=parse_constraint(parts[0]),
-                        python=parts[1].split(" ")[1] if len(parts) > 1 and "python" in parts[1] else None,
+                        python=parts[1].split(" ")[1]
+                        if len(parts) > 1 and "python" in parts[1]
+                        else None,
                         extras=None,
                         is_dev=is_dev,
                     )
@@ -157,7 +164,9 @@ class PoetryProject:
                         BasicDependency(
                             name=name,
                             version=parse_constraint(i["version"]),
-                            python=parse_constraint(i["python"]) if "python" in i else None,
+                            python=parse_constraint(i["python"])
+                            if "python" in i
+                            else None,
                             extras=i["extras"] if "extras" in i else None,
                             is_dev=is_dev,
                         )
@@ -184,7 +193,9 @@ class PoetryProject:
                     )
 
                 elif "version" in item:
-                    if (k := find_other_key(item, ["version", "extras", "python"])) is not None:
+                    if (
+                        k := find_other_key(item, ["version", "extras", "python"])
+                    ) is not None:
                         raise ControlledError(
                             f"key {k} is not supported (in dependency {name})"
                         )
@@ -193,7 +204,9 @@ class PoetryProject:
                         BasicDependency(
                             name=name,
                             version=parse_constraint(item["version"]),
-                            python=parse_constraint(item["python"]) if "python" in item else None,
+                            python=parse_constraint(item["python"])
+                            if "python" in item
+                            else None,
                             extras=item.get("extras"),
                             is_dev=is_dev,
                         )

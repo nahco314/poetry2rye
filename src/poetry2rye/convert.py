@@ -17,8 +17,8 @@ def read_name_email(string: str) -> dict[str, str]:
     return {"name": name, "email": email[1:-1]}
 
 
-def convert(project_path: Path) -> None:
-    poetry_project = PoetryProject(project_path)
+def convert(project_path: Path, ensure_src: bool = True) -> None:
+    poetry_project = PoetryProject(project_path, ensure_src=ensure_src)
 
     project_sec = {}
     urls_sec = {}
@@ -138,12 +138,14 @@ def convert(project_path: Path) -> None:
 
     if (project_path / "poetry.lock").exists():
         os.remove(project_path / "poetry.lock")
-    if not (project_path / "src").exists():
-        (project_path / "src").mkdir()
-        shutil.move(
-            poetry_project.module_path,
-            project_path / "src" / poetry_project.module_name,
-        )
+
+    if ensure_src:
+        if not (project_path / "src").exists():
+            (project_path / "src").mkdir()
+            shutil.move(
+                poetry_project.module_path,
+                project_path / "src" / poetry_project.module_name,
+            )
 
 
 def _convert_scripts(poetry_scripts):
