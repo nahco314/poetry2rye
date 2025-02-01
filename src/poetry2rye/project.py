@@ -104,7 +104,10 @@ class PoetryProject:
         with open(self.path / "pyproject.toml", "rb") as file:
             self.pyproject = tomllib.load(file)
 
-        self.poetry = self.pyproject["tool"]["poetry"]
+        try:
+            self.poetry = self.pyproject["tool"]["poetry"]
+        except Exception:
+            raise ControlledError("this project is not managed by poetry !")
 
         if self.pyproject.get("project") is not None:
             raise ControlledError(
