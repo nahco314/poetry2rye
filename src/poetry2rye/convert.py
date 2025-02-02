@@ -17,12 +17,14 @@ def read_name_email(string: str) -> dict[str, str]:
     return {"name": name, "email": email[1:-1]}
 
 
-def convert(project_path: Path, ensure_src: bool = True) -> None:
+def convert(
+    project_path: Path, ensure_src: bool = True, virtual_project: bool = False
+) -> None:
     poetry_project = PoetryProject(project_path, ensure_src=ensure_src)
 
     project_sec = {}
     urls_sec = {}
-    tool_rye_sec: dict[str, Any] = {"managed": True}
+    tool_rye_sec: dict[str, Any] = {"managed": True, "virtual": virtual_project}
 
     # required
     project_sec["name"] = poetry_project.project_name
@@ -106,22 +108,35 @@ def convert(project_path: Path, ensure_src: bool = True) -> None:
             result["tool"] = deepcopy(pyproject["tool"])
             result["tool"].pop("poetry")
         elif name == "build-system":
-            result["build-system"] = deepcopy(pyproject["build-system"])
-            result["build-system"]["requires"] = list(
-                filterfalse(
-                    lambda x: "poetry-core" in x, result["build-system"]["requires"]
+            if not virtual_project:
+                result["build-system"] = deepcopy(pyproject["build-system"])
+                result["build-system"]["requires"] = list(
+                    filterfalse(
+                        lambda x: "poetry-core" in x, result["build-system"]["requires"]
+                    )
                 )
-            )
-            result["build-system"]["requires"].append("hatchling")
-            result["build-system"]["build-backend"] = "hatchling.build"
+                result["build-system"]["requires"].append("hatchling")
+                result["build-system"]["build-backend"] = "hatchling.build"
         else:
             result[name] = deepcopy(pyproject[name])
 
-    packages = [f"src/{poetry_project.module_name}"]
-
     result["tool"]["rye"] = tool_rye_sec
-    result["tool"]["hatch"] = {"metadata": {"allow-direct-references": True}}
-    result["tool"]["hatch"]["build"] = {"targets": {"wheel": {"packages": packages}}}
+
+    # handle build config if project is not virtual (virtual : only dependency manager)
+    if not virtual_project:
+        if ensure_src:
+            packages = [f"src/{poetry_project.module_name}"]
+        else:
+            packages = [
+                item["include"]
+                for item in poetry_project.poetry.get("packages", [])
+                if "include" in item
+            ]
+
+        result["tool"]["hatch"] = {"metadata": {"allow-direct-references": True}}
+        result["tool"]["hatch"]["build"] = {
+            "targets": {"wheel": {"packages": packages}}
+        }
 
     project_backup = get_next_backup_path(project_path)
     shutil.copytree(project_path, project_backup, dirs_exist_ok=True, symlinks=True)

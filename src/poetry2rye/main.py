@@ -13,8 +13,13 @@ def handle_mig(args: Any) -> None:
     path: Path = args.path
     project_path = Path(path).absolute()
     ensure_src: bool = not args.ignore_src
+    virtual_project: bool = args.virtual
 
-    convert(project_path=project_path, ensure_src=ensure_src)
+    convert(
+        project_path=project_path,
+        ensure_src=ensure_src,
+        virtual_project=virtual_project,
+    )
 
     print("done")
 
@@ -65,6 +70,12 @@ def main(args: Optional[list[str]] = None):
     mig_parser.add_argument(
         "--ignore-src",
         help='use it to ignore the checking/creating "src/" directory during migration process (by default will check and create).',
+        action="store_true",
+        default=False,
+    )
+    mig_parser.add_argument(
+        "--virtual",
+        help="perform migration by considering as a virtual package.\n\nA virtual package can have dependencies but is itself not installed as a Python package.  It also cannot be published.",
         action="store_true",
         default=False,
     )
