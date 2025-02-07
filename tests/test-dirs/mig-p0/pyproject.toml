@@ -4,12 +4,14 @@ version = "0.1.0"
 description = ""
 authors = [{name = "nahco314",email = "nahco3_ta@yahoo.co.jp"}]
 readme = "README.md"
-dependencies = []
+dependencies = [
+]
 requires-python = ">=3.12,<4.0"
 
 
 [tool.rye]
 managed = true
+virtual = false
 
 [tool.hatch]
 [tool.hatch.metadata]
