@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "p3"
+version = "0.1.0"
+description = ""
+authors = ["amiraref <amiraref808@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+target-version = "py312"

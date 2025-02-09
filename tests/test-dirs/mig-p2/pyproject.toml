@@ -11,7 +11,7 @@ requires-python = ">=3.12,<4.0"
 [project.scripts]
 p2 = "p2.main:main"
 
-
+[tool]
 [tool.rye]
 managed = true
 virtual = false

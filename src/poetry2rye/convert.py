@@ -102,14 +102,20 @@ def convert(
         result["project.urls"] = urls_sec
 
     # first add rye to tool section
-    result["tool"] = {"rye": tool_rye_sec}
+    tool_table = tomlkit.table()
+    tool_table.add("rye", tool_rye_sec)
 
     for name in pyproject.keys():
         if name == "project":
             continue
         elif name == "tool":
-            result["tool"] = result["tool"] | deepcopy(pyproject["tool"])
-            result["tool"].pop("poetry")
+            # add items to tool table
+            for key, value in pyproject["tool"].items():
+                tool_table.add(key, value)
+            # remove poetry
+            tool_table.pop("poetry")
+            result["tool"] = tool_table
+
         elif name == "build-system":
             if not virtual_project:
                 result["build-system"] = deepcopy(pyproject["build-system"])
