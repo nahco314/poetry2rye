@@ -101,11 +101,14 @@ def convert(
     if urls_sec:
         result["project.urls"] = urls_sec
 
+    # first add rye to tool section
+    result["tool"] = {"rye": tool_rye_sec}
+
     for name in pyproject.keys():
         if name == "project":
             continue
         elif name == "tool":
-            result["tool"] = deepcopy(pyproject["tool"])
+            result["tool"] = result["tool"] | deepcopy(pyproject["tool"])
             result["tool"].pop("poetry")
         elif name == "build-system":
             if not virtual_project:
@@ -119,8 +122,6 @@ def convert(
                 result["build-system"]["build-backend"] = "hatchling.build"
         else:
             result[name] = deepcopy(pyproject[name])
-
-    result["tool"]["rye"] = tool_rye_sec
 
     # handle build config if project is not virtual (virtual : only dependency manager)
     if not virtual_project:
