@@ -9,18 +9,29 @@ import difflib
 
 from poetry2rye.main import main as app_main
 
-PROJECT_NAMES = ["p0", "p1", "p2"]
+PROJECT_NAMES = [
+    ("p0", False),
+    ("p1", False),
+    ("p2", False),
+    ("p3", True),
+]
 
 
-@pytest.mark.parametrize("project_name", PROJECT_NAMES)
-def test_migrate(project_name: str, tmp_path: Path, dirs: Path, rye: str) -> None:
+@pytest.mark.parametrize("project_name,is_virtual", PROJECT_NAMES)
+def test_migrate(
+    project_name: str, is_virtual: bool, tmp_path: Path, dirs: Path, rye: str
+) -> None:
     base_project = dirs / project_name
     tmp_project = tmp_path / project_name
     mig_project = dirs / f"mig-{project_name}"
 
     shutil.copytree(base_project, tmp_project)
 
-    app_main(["mig", str(tmp_project.absolute())])
+    commands = ["mig", str(tmp_project.absolute())]
+    if is_virtual:
+        commands.append("--virtual")
+
+    app_main(commands)
 
     subprocess.run([rye, "sync"], cwd=tmp_project, check=True)
 

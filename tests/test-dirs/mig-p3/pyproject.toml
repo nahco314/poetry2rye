@@ -1,0 +1,19 @@
+[project]
+name = "p3"
+version = "0.1.0"
+description = ""
+authors = [{name = "amiraref",email = "amiraref808@gmail.com"}]
+readme = "README.md"
+dependencies = [
+]
+requires-python = ">=3.12,<4.0"
+
+[tool]
+[tool.rye]
+managed = true
+virtual = true
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+target-version = "py312"

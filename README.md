@@ -24,6 +24,15 @@ This command does the following:
   - add `[tool.rye]`
   - add `[tool.hatch.metadata]`
 
+#### Options
+- `--ignore-src` : use this flag to ignore creating `src/` directory, so it won't change the project files layout.
+- `--virtual` : use this command to consider project as a [virtual project](https://rye.astral.sh/guide/virtual/) (based on rye docs).
+> Virtual projects are projects which are themselves not installable Python packages, but that will sync their dependencies. 
+
+
+See full options with their descriptions with `poetry2rye mig --help` command,
+
+
 ### Get Backup
 `poetry2rye get-backup [PATH]`
 
@@ -36,6 +45,9 @@ Retrieve the backup automatically created during migration and replace the proje
 if NUMBER is not specified, the last backup created will be used.
 
 The backup folder is `.__p2r_backup_{project_name}_{number}` format and placed in the same directory as the project directory (which is a child of the project parent directory).
+
+## Dockerfile
+Since this tool does not support migration for `Dockerfile` (which is not rational to add), you've to migrate your `Dockerfile` **manually** based on [rye documentation](https://rye.astral.sh/guide/docker/)
 
 # Other
 This tool is for personal use and should be used at your own risk. Backups will be made, but we cannot be held responsible for project corruption!
